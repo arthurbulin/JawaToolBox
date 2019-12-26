@@ -1,0 +1,20 @@
+name: JawaToolBox
+main: net.jawasystems.jawatoolbox.JawaToolBox
+version: 1.0
+commands:
+  mmadd:
+    description: Used to add a user to the maintenance mode whitelist
+    usage: /mmadd <uuid|playername>
+    permission: jawatoolbox.mm.add
+  mmtoggle:
+    description: Used to toggle active state of maintenance mode
+    usage: /mmtoggle
+    permission: jawatoolbox.mm.toggle
+  mmremove:
+    description: Used to remove a user from the maintenance mode list
+    usage: /mmremove <uuid|playername>
+    permission: jawatoolbox.mm.remove
+  mmstatus:
+    description: Used to see the maintenance status of the server
+    usage: /mmstatus
+    permission: jawatoolbox.mm.status
