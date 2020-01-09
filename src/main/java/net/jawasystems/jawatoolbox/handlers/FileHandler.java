@@ -18,6 +18,7 @@ import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.jawasystems.jawatoolbox.JawaToolBox;
+import org.json.JSONObject;
 
 /**
  *
@@ -87,5 +88,6 @@ public class FileHandler {
             Logger.getLogger(FileHandler.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+
     
 }
