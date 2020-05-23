@@ -16,11 +16,14 @@
  */
 package net.jawasystems.jawatoolbox;
 
-import java.util.HashMap;
+import java.util.Arrays;
+import java.util.HashSet;
+import net.jawasystems.jawatoolbox.handlers.MOTDHandler;
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-
+import org.bukkit.entity.Player;
 
 /**
  *
@@ -28,20 +31,94 @@ import org.bukkit.command.CommandSender;
  */
 public class MOTD implements CommandExecutor {
 
+    private final String TOOSHORT = ChatColor.RED + " > That command requires more aguments!";
+    private final String BADTYPE = ChatColor.RED + " > That is not a valid type. The type are normal, priority, and title.";
+    private final String BADINT = ChatColor.RED + " > An integer argument is required!";
+
     @Override
     public boolean onCommand(CommandSender commandSender, Command command, String label, String[] args) {
-        String usage = "/motd -edit <message number> <message>"
-                + "/motd -add <message>"
-                + "/motd -del <message number>"
-                + "/motd";   
-        
+        String usage
+                = "Get the motd: /motd"
+                //+ "Edit: /motd edit <type> <message number> <message>"
+                + "Add: /motd add <type> <message>"
+                + "Remove: /motd rem <type> <message number>"
+                + "Help: /motd help";
+
+        Player target = (Player) commandSender;
+        HashSet<String> types = new HashSet(Arrays.asList("normal", "priority", "title"));
+
+        if (args == null || args.length == 0) {
+            MOTDHandler.sendNormalMOTD(target);
+        } else if (args.length == 1) {
+            if (!commandSender.hasPermission("jawatoolbox.motd.admin")) {
+                commandSender.sendMessage(ChatColor.RED + " > You do not have permission to perform admin functions on the MOTD.");
+                return true;
+            }
+            switch (args[0].toLowerCase()) {
+                case "edit": {
+                    MOTDHandler.sendMOTDEdit(target);
+                    break;
+                }
+                case "help": {
+                    target.sendMessage(usage);
+                    break;
+                }
+                default: {
+                    target.sendMessage(ChatColor.RED + " > That argument is not understood.");
+                    target.sendMessage(usage);
+                    break;
+                }
+            }
+        } else if (args.length > 1) {
+            if (!commandSender.hasPermission("jawatoolbox.motd.admin")) {
+                commandSender.sendMessage(ChatColor.RED + " > You do not have permission to perform admin functions on the MOTD.");
+                return true;
+            }
+            switch (args[0].toLowerCase()) {
+                case "add": { //motd add <type> <message...>
+                    if (args.length < 3) {
+                        commandSender.sendMessage(TOOSHORT);
+                        return true;
+                    }
+                    if (!types.contains(args[1].toLowerCase())) {
+                        commandSender.sendMessage(BADTYPE);
+                        return true;
+                    }
+
+                    MOTDHandler.addToMOTD(String.join(" ", Arrays.copyOfRange(args, 2, args.length, String[].class)), args[1], target);
+                    break;
+                }
+                case "rem": { ///motd rem <type> <message number>
+                    if (args.length < 2) {
+                        commandSender.sendMessage(TOOSHORT);
+                        return true;
+                    }
+                    if (!types.contains(args[1].toLowerCase())) {
+                        commandSender.sendMessage(BADTYPE);
+                        return true;
+                    }
+
+                    if (!args[1].equalsIgnoreCase("title")) {
+                        try {
+                            Integer.valueOf(args[2]);
+                        } catch (NumberFormatException ex) {
+                            commandSender.sendMessage(BADINT);
+                            return true;
+                        }
+                        MOTDHandler.removeFromMOTD(args[1].toLowerCase(), Integer.valueOf(args[2]), target);
+                    } else {
+                        MOTDHandler.removeFromMOTD(args[1].toLowerCase(), 0, target);
+                    }
+                    break;
+                }
+            }
+        }
+
         //HashMap<String,String> parsed = ArgumentParser.getArgumentValues(args);
         //evaluate arguments
         //check permissions
         //execute values
-        
-        
         return true;
     }
-    
+
 }

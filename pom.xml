@@ -3,13 +3,12 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>net.jawasystems</groupId>
     <artifactId>JawaToolBox</artifactId>
-    <version>0.1</version>
-    <packaging>jar</packaging>
+    <version>0.9</version>
     <dependencies>
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>1.15.1-R0.1-SNAPSHOT</version>
+            <version>1.15.2-R0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.json</groupId>
@@ -18,9 +17,20 @@
             <type>jar</type>
         </dependency>
     </dependencies>
+    <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+    </build>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
+        <timestamp>${maven.build.timestamp}</timestamp>
+        <maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
+        <author>Jawamaster (Arthur Bulin)</author>
     </properties>
 </project>

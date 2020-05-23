@@ -6,6 +6,7 @@
 package net.jawasystems.jawatoolbox.listeners;
 
 import net.jawasystems.jawatoolbox.JawaToolBox;
+import net.jawasystems.jawatoolbox.handlers.MOTDHandler;
 import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -21,6 +22,10 @@ public class PlayerJoin implements Listener{
     public static void onPlayerJoin(PlayerJoinEvent event) {
         if (JawaToolBox.maintenanceMode){
             event.getPlayer().sendMessage(ChatColor.GREEN + " > **** Maintenance Mode is ONLINE ****");
+        }
+        
+        if (event.getPlayer().hasPermission("jawatoolbox.motd")){
+            MOTDHandler.sendNormalMOTD(event.getPlayer());
         }
     }
     

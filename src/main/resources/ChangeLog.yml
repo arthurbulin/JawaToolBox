@@ -1,0 +1,12 @@
+## JawaToolBox ChangeLog.
+latest: ${pom.version}
+build-date: ${timestamp}
+0.9:
+  - Changed to sleep vote system
+  - Included info command to get this change log
+  - not really anything else
+0.1:
+  - First build
+  - Created Maintenance mode
+  - Created Kit command
+  - Created Sleep detection

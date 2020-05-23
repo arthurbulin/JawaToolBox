@@ -49,9 +49,9 @@ public class MOTDHandler {
      * @param plugin 
      */
     public MOTDHandler(Configuration config, JawaToolBox plugin) {
+        MOTDHandler.plugin = plugin;
         MOTDHandler.motdNormalCount = config.getInt("motd-normal-count", 4);
         MOTDHandler.motd = loadMOTD();
-        MOTDHandler.plugin = plugin;
     }
 
     /** Loads the motd.json file into the motd object. If there is an error the exception
@@ -62,16 +62,20 @@ public class MOTDHandler {
      */
     public static JSONObject loadMOTD() {
         File JSONFile = new File(plugin.getDataFolder() + "/motd.json");
-
-        try {
-            String source = new String(Files.readAllBytes(Paths.get(JSONFile.toURI())));
-            return new JSONObject(source);
-        } catch (FileNotFoundException ex) {
+        
+        if (!JSONFile.exists()){
             Logger.getLogger(MOTDHandler.class.getName()).log(Level.INFO, "motd.json was not found in the config directory. Attempting to create a blank file.");
             boolean worked = saveMOTD(new JSONObject());
             if (worked) Logger.getLogger(MOTDHandler.class.getName()).log(Level.INFO, "motd.json created!");
             else Logger.getLogger(MOTDHandler.class.getName()).log(Level.INFO, "JawaToolBox was unable to generate the blank motd.json. This is likely a permissions problem.");
             return new JSONObject();
+        }
+
+        try {
+            String source = new String(Files.readAllBytes(Paths.get(JSONFile.toURI())));
+            return new JSONObject(source);
+        } catch (FileNotFoundException ex) {
+           return new JSONObject();
         } catch (IOException ex) {
             Logger.getLogger(MOTDHandler.class.getName()).log(Level.SEVERE, "Something went wrong JawaToolBox wasn't able to read the motd.json. Check directory permissions.");
             Logger.getLogger(MOTDHandler.class.getName()).log(Level.SEVERE, null, ex);
@@ -112,6 +116,7 @@ public class MOTDHandler {
     /** Adds the message to the motd and sends feed back to the player if it works or fails.
      * @param item
      * @param type
+     * @param target
      */
     public static void addToMOTD(String item, String type, Player target) {
         boolean worked;
@@ -153,19 +158,22 @@ public class MOTDHandler {
      * @param target
      */
     public static void sendNormalMOTD(Player target) {
-        String[] priority = new String[motd.getJSONArray("priority").length()];
+        boolean somethingSent = false;
 
         //Send motd title
         if (motd.has("title")) {
             target.sendMessage(ChatColor.translateAlternateColorCodes('&', motd.getString("title")));
+            somethingSent = true;
         }
 
         //Send priority messages
         if (motd.has("priority")) {
-            for (int i = 0; i > priority.length; i++) {
+            String[] priority = new String[motd.getJSONArray("priority").length()];
+            for (int i = 0; i < priority.length; i++) {
                 priority[i] = ChatColor.GOLD + " > " + ChatColor.translateAlternateColorCodes('&', motd.getJSONArray("priority").getString(i));
             }
             target.sendMessage(priority);
+            somethingSent = true;
         }
 
         //send a few random daily's
@@ -182,17 +190,18 @@ public class MOTDHandler {
             String[] normalMessages = new String[totalNormalMessages];
             JSONArray used = new JSONArray();
             int itemNum = r.nextInt(motd.getJSONArray("normal").length());
-            normalMessages[0] = motd.getJSONArray("normal").getString(itemNum);
+            normalMessages[0] = ChatColor.GREEN + " > " + ChatColor.WHITE + ChatColor.translateAlternateColorCodes('&', motd.getJSONArray("normal").getString(itemNum));
             used.put(itemNum);
 
             for (int i = 1; i < totalNormalMessages; i++) {
                 while (used.toList().contains(itemNum)) {
                     itemNum = r.nextInt(motd.getJSONArray("normal").length());
                 }
-                normalMessages[i] = motd.getJSONArray("normal").getString(itemNum);
+                normalMessages[i] = ChatColor.GREEN + " > " + ChatColor.WHITE + ChatColor.translateAlternateColorCodes('&', motd.getJSONArray("normal").getString(itemNum));
             }
 
             target.sendMessage(normalMessages);
+            somethingSent = true;
         }
 
     }
@@ -204,15 +213,20 @@ public class MOTDHandler {
      * @param target
      */
     public static void sendMOTDEdit(Player target) {
-        target.sendMessage(ChatColor.GREEN + " > MOTD Title: " + ChatColor.translateAlternateColorCodes('&', motd.getString("title")));
+        if (motd.has("title")){
+            target.sendMessage(ChatColor.GREEN + " > MOTD Title: " + ChatColor.translateAlternateColorCodes('&', motd.getString("title")));
+        }
+        
         if (motd.has("priority")) {
             target.sendMessage(ChatColor.GREEN + " > " + ChatColor.GOLD + " Priority messages. These will always show to the player.");
-            for (int i = 0; i < motd.getJSONArray("priorioty").length(); i++) {
+            for (int i = 0; i < motd.getJSONArray("priority").length(); i++) {
                 target.sendMessage(ChatColor.GREEN + " > " + ChatColor.AQUA + String.valueOf(i) + " " + ChatColor.translateAlternateColorCodes('&', motd.getJSONArray("priority").getString(i)));
             }
             if (motd.has("normal")) {
                 target.sendMessage(ChatColor.GREEN + "--------------------------------------------------");
             }
+        } else {
+            target.sendMessage(ChatColor.GREEN + " > There are no priority messages");
         }
 
         if (motd.has("normal")) {
@@ -220,6 +234,8 @@ public class MOTDHandler {
             for (int i = 0; i < motd.getJSONArray("normal").length(); i++) {
                 target.sendMessage(ChatColor.GREEN + " > " + ChatColor.AQUA + String.valueOf(i) + " " + ChatColor.translateAlternateColorCodes('&', motd.getJSONArray("normal").getString(i)));
             }
+        } else {
+            target.sendMessage(ChatColor.GREEN + " > There are no normal messages");
         }
     }
 
@@ -267,6 +283,7 @@ public class MOTDHandler {
             }
             case "priority": {
                 if (motd.has("priority")) {
+                    
                     if (index < motd.getJSONArray("priority").length() && index >= 0) {
                         motd.getJSONArray("priority").remove(index);
                         saveMOTD();
