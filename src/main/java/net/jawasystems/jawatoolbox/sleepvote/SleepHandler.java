@@ -6,7 +6,10 @@
 package net.jawasystems.jawatoolbox.sleepvote;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import net.jawasystems.jawatoolbox.JawaToolBox;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
@@ -24,7 +27,10 @@ import org.bukkit.entity.Player;
 public class SleepHandler {
     
     private static HashMap<String,HashMap<UUID,Boolean>> trackVotes = new HashMap();
-    
+    private static final double SLEEPPERCENT = JawaToolBox.getConfiguration().getDouble("sleep-percentage", 50.0) / 100.0d;
+    private static final HashSet<UUID> SLEEPINGLIST = new HashSet();
+    private static final Logger LOGGER = Logger.getLogger("SleepHandler");
+
     
     public static boolean castVote(Player player, boolean vote){
         if (trackVotes.containsKey(player.getWorld().getName())){
@@ -94,4 +100,48 @@ public class SleepHandler {
         resetVote(world);
     }
     
+    public static void startSleepMonitor() {
+        
+        LOGGER.log(Level.INFO, "Starting Sleep Monitor");
+        Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(JawaToolBox.getPlugin(), () -> {
+
+            int total = Bukkit.getWorld("world").getPlayers().size();
+            int sleeping = SLEEPINGLIST.size();
+            
+            //sleeping = Bukkit.getWorld("world").getPlayers().stream().filter((player) -> (player.isSleeping() || player.isSleepingIgnored())).map((_item) -> 1).reduce(sleeping, Integer::sum);
+            SLEEPINGLIST.clear();
+            if (!Bukkit.getWorld("world").getPlayers().isEmpty()) {
+                for (Player target : Bukkit.getWorld("world").getPlayers()) {
+                    if (target.isSleeping()) {
+                        SLEEPINGLIST.add(target.getUniqueId());
+                    }
+                }
+            }
+
+            double ratio = (double) SLEEPINGLIST.size() / (double) total;
+            
+//            LOGGER.log(Level.INFO, "Ratio: {0}", ratio);
+//            LOGGER.log(Level.INFO, "sleeping: {0}", sleeping);
+//            LOGGER.log(Level.INFO, "total: {0}", total);
+//            LOGGER.log(Level.INFO, "sleepinglist: {0}", SLEEPINGLIST.size());
+//            LOGGER.log(Level.INFO, "Sleeppercent: {0}", SLEEPPERCENT);
+
+            
+            //System.out.println(sleeping + "," + total + "," + JawaToolBox.getConfiguration().getInt("sleep-percentage", 50) + "," + 100.0d);
+            if (ratio >= SLEEPPERCENT) {
+                SLEEPINGLIST.clear();
+                Bukkit.getServer().broadcastMessage(org.bukkit.ChatColor.GREEN + " > **** Good Morning ****");
+                Bukkit.getWorld("world").setTime(0);
+            } else if (SLEEPINGLIST.size() != sleeping){
+                Bukkit.getServer().broadcastMessage(org.bukkit.ChatColor.GOLD + " > " + SLEEPINGLIST.size() + " of " + total + " players sleeping.");
+            }
+
+        }, 100, 150);
+    }
+    
+    public static void removeFromSleepingList(UUID uuid){
+        if (SLEEPINGLIST.contains(uuid))
+        SLEEPINGLIST.remove(uuid);
+    }
+
 }

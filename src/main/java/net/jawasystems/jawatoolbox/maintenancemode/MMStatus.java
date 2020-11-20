@@ -5,7 +5,6 @@
  */
 package net.jawasystems.jawatoolbox.maintenancemode;
 
-import net.jawasystems.jawatoolbox.JawaToolBox;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -21,10 +20,10 @@ public class MMStatus implements CommandExecutor{
     public boolean onCommand(CommandSender commandSender, Command cmnd, String string, String[] args) {
         String stateString;
         
-        if (JawaToolBox.maintenanceMode) stateString = ChatColor.DARK_GREEN + "Online";
+        if (MaintenanceModeHandler.getMMStatus()) stateString = ChatColor.DARK_GREEN + "Online";
         else stateString = ChatColor.RED + "Offline";
         
-        commandSender.sendMessage(ChatColor.GREEN + " > Maintenance mode is currently: " + stateString);
+        commandSender.sendMessage(ChatColor.GREEN + " > Maintenance mode is currently: " + stateString + ChatColor.GREEN + " with level " + MaintenanceModeHandler.getMMLevel());
         
         return true;
     }

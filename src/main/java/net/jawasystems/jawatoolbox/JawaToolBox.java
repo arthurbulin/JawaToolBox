@@ -14,8 +14,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.jawasystems.jawatoolbox.handlers.FileHandler;
 import net.jawasystems.jawatoolbox.handlers.MOTDHandler;
-import net.jawasystems.jawatoolbox.sleepvote.PlayerBedEnter;
-import net.jawasystems.jawatoolbox.listeners.PlayerBedLeave;
 import net.jawasystems.jawatoolbox.listeners.PlayerDeathListener;
 import net.jawasystems.jawatoolbox.listeners.PlayerJoin;
 import net.jawasystems.jawatoolbox.listeners.PlayerPreJoin;
@@ -23,6 +21,8 @@ import net.jawasystems.jawatoolbox.maintenancemode.MMAdd;
 import net.jawasystems.jawatoolbox.maintenancemode.MMRemove;
 import net.jawasystems.jawatoolbox.maintenancemode.MMStatus;
 import net.jawasystems.jawatoolbox.maintenancemode.MMToggle;
+import net.jawasystems.jawatoolbox.maintenancemode.MaintenanceModeHandler;
+import net.jawasystems.jawatoolbox.sleepvote.SleepHandler;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -38,7 +38,7 @@ public class JawaToolBox extends JavaPlugin{
     public static HashSet<UUID> sleepList;
     private static JawaToolBox plugin;
     private static Configuration config;
-    public static boolean maintenanceMode;
+    //public static boolean maintenanceMode;
     private static FileConfiguration changelog;
    
     
@@ -52,9 +52,10 @@ public class JawaToolBox extends JavaPlugin{
         maintenanceList = FileHandler.getMaintenanceList();
         this.saveDefaultConfig();
         config = this.getConfig();
-        maintenanceMode = config.getBoolean("maintenance-mode", false);
+        MaintenanceModeHandler.initializeMM(config.getBoolean("maintenance-mode", false), config.getString("maintenance-level", "normal"));
+        //maintenanceMode = config.getBoolean("maintenance-mode", false);
 
-        System.out.println("[JawaToolBox] Maintenance Mode: " + String.valueOf(maintenanceMode));
+        //System.out.println("[JawaToolBox] Maintenance Mode: " + String.valueOf(maintenanceMode));
         
         motdHandler = new MOTDHandler(config, this);
         
@@ -62,8 +63,8 @@ public class JawaToolBox extends JavaPlugin{
         
         getServer().getPluginManager().registerEvents(new PlayerPreJoin(), this);
         getServer().getPluginManager().registerEvents(new PlayerJoin(), this);
-        getServer().getPluginManager().registerEvents(new PlayerBedEnter(), this);
-        getServer().getPluginManager().registerEvents(new PlayerBedLeave(), this);
+        //getServer().getPluginManager().registerEvents(new PlayerBedEnter(), this);
+        //getServer().getPluginManager().registerEvents(new PlayerBedLeave(), this);
         
         //Protects players from void deaths to an extent
         getServer().getPluginManager().registerEvents(new PlayerDeathListener(), this);
@@ -76,6 +77,7 @@ public class JawaToolBox extends JavaPlugin{
         this.getCommand("motd").setExecutor(new MOTD());
         
         this.getCommand("jawatoolbox").setExecutor(new JawaToolBoxAbout());
+        SleepHandler.startSleepMonitor();
     }
     
     @Override
@@ -94,6 +96,7 @@ public class JawaToolBox extends JavaPlugin{
     public static Configuration getConfiguration(){
         return config;
     }
+    
     
     private static void loadChangeLog() {
         InputStream io = JawaToolBox.getPlugin().getResource("ChangeLog.yml");
