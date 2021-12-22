@@ -25,6 +25,7 @@ import org.json.JSONObject;
  * @author alexander
  */
 public class FileHandler {
+    private static final Logger LOGGER = Logger.getLogger("FileHandler");
     
     public static HashSet getMaintenanceList(){
         File maintenanceList = new File(JawaToolBox.getPlugin().getDataFolder() + "/maintenancelist.txt");
@@ -37,7 +38,7 @@ public class FileHandler {
                 reader = new BufferedReader(new FileReader(maintenanceList));
             } catch (FileNotFoundException ex) {
                 Logger.getLogger(FileHandler.class.getName()).log(Level.SEVERE, null, ex);
-                System.out.println("[JawaToolBox] A problem was encountered reading maintenancelist.txt. No UUIDS loaded.");
+                LOGGER.log(Level.SEVERE, "A problem was encountered reading maintenancelist.txt. No UUIDS loaded.");
                 return mList; //short circuit it here
             }
             
@@ -48,7 +49,7 @@ public class FileHandler {
                 try {
                     uuid = UUID.fromString(line);
                 } catch (IllegalArgumentException ex) {
-                    System.out.println("[JawaToolBox] " + line + " is an invalid UUID. Please check your maintenancelist.txt");
+                    LOGGER.log(Level.WARNING, "{0} is an invalid UUID. Please check your maintenancelist.txt", line);
                     continue;
                 }
 
@@ -56,14 +57,14 @@ public class FileHandler {
                 line = reader.readLine();
             }
             reader.close();
-            System.out.println("[JawaToolBox] " + mList.size() + " UUIDs loaded into the maintenance list.");
+            LOGGER.log(Level.INFO, "{0} UUIDs loaded into the maintenance list.", mList.size());
             
         } catch (IOException ex) {
                 Logger.getLogger(FileHandler.class.getName()).log(Level.SEVERE, null, ex);
                 return mList;
             }
             
-        } else System.out.println("[JawaToolBox] No maintenancelist.txt exists. No UUIDS loaded.");
+        } else LOGGER.log(Level.INFO, "No maintenancelist.txt exists. No UUIDS loaded.");
         return mList;
     }
     
@@ -81,10 +82,10 @@ public class FileHandler {
             
             writer.close();
         } catch (FileNotFoundException ex) {
-            System.out.println("Something went wrong and the maintenancelist.txt file wasn't found.");
+            LOGGER.log(Level.WARNING,"Something went wrong and the maintenancelist.txt file wasn't found.");
             Logger.getLogger(FileHandler.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
-            System.out.println("Something went wrong and the maintenancelist.txt file couldn't be written too.");
+            LOGGER.log(Level.WARNING,"Something went wrong and the maintenancelist.txt file couldn't be written too.");
             Logger.getLogger(FileHandler.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
