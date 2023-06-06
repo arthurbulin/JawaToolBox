@@ -4,7 +4,7 @@ version: ${pom.version}
 description: "A toolbox with general server customization options such as sleep control, motd, and maintenance mode."
 author: Jawamaster (Arthur Bulin)
 website: jawasystems.net
-api-version: 1.16
+api-version: 1.18
 commands:
   mmadd:
     description: Used to add a user to the maintenance mode whitelist
