@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>net.jawasystems</groupId>
     <artifactId>JawaToolBox</artifactId>
-    <version>1.18.X-0.9</version>
+    <version>1.20.X-0.1</version>
    
     <build>
         <plugins>
@@ -39,7 +39,7 @@
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>1.18.1-R0.1-SNAPSHOT</version>
+            <version>1.20.1-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
