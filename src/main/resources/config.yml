@@ -1,2 +1,3 @@
 maintenance-mode: false
-sleep-percentage: 50
+maintenance-level: normal
+sleep-percentage: 50.0

@@ -1,6 +1,6 @@
 # JawaToolBox
 
-JawaToolBox is a simple Spigot plugin for Minecraft 1.15.1 that isn't dependent on any other plugins. Currently it only contains a maintenance mode feature that allows a server admins to keep other users from joining unless they are on the maintenance list. Automatic restart functionality, sleep voting, and other things are planned for this plugin. Building is done with Maven and development is done in Apache Netbeans.
+JawaToolBox is a simple Paper/Spigot plugin for Minecraft that isn't dependent on any other plugins. This contains a maintenance mode (a selective allowlist) and a sleep voting system.
 
 ## Getting Started
 
@@ -12,7 +12,10 @@ git clone https://github.com/arthurbulin/JawaToolBox
 
 ### Prerequisites
 
-You need Maven to build the plugin. Netbeans is optional but recommended. To use it you need Spigot 1.15.X. It should work under 1.14.X but I haven't tested it.
+You will need 
+    - Maven to build the plugin
+    - Java 17
+    - Minecraft server running on Paper/Spigot (Paper is prefered and I will probably not support Spigot by the end of 1.20 support)
 
 ### Installing
 

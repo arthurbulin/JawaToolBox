@@ -6,6 +6,7 @@
 package net.jawasystems.jawatoolbox.listeners;
 
 import net.jawasystems.jawatoolbox.JawaToolBox;
+import net.jawasystems.jawatoolbox.maintenancemode.MaintenanceModeHandler;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
@@ -18,7 +19,7 @@ public class PlayerPreJoin implements Listener{
     
     @EventHandler
     public static void onPlayerJoin(AsyncPlayerPreLoginEvent event) {
-        if (JawaToolBox.maintenanceMode && !JawaToolBox.maintenanceList.contains(event.getUniqueId())) {
+        if (MaintenanceModeHandler.getMMStatus() && MaintenanceModeHandler.getMMLevel().equalsIgnoreCase("list") && !JawaToolBox.maintenanceList.contains(event.getUniqueId())) {
             event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, "This server is currently in maintenance mode. Only authorized personel may join.");
         }
     }
